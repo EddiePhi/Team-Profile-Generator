@@ -65,20 +65,17 @@ const generalQuestions = [
         name: 'role',
         message: 'Job Role: ',
         choices: ['Manager', 'Engineer', 'Intern']
-
     },
     {
         type: 'input',
         name: 'email',
-        message: 'Email Address',
+        message: 'Email Address: ',
     },
     {
         type: 'input',
         name: 'id',
         message: 'ID: ',
     },
-    
-    
 ];
 
 const managerQuestion = [
@@ -117,11 +114,24 @@ inquirer
                             .prompt(managerQuestion)
                             .then(function(managerAnswer){
                                 generalAnswers.officeNumber = managerAnswer.officeNumber;
-                                console.log(managerAnswer.officeNumber);
+        
                                 teamMembers.push(generalAnswers);
+                                //console.log(generalAnswers)
+                                
                                 console.log('Manager added!');
-                                return console.log(teamMembers);
-                            });
+                                console.log(teamMembers)
+
+                                // PROBLEM AREA --------------------------------
+                                render(teamMembers);
+                                // ---------------------------------------------
+                                  
+                            })
+                            .then(function(data){
+                                fs.writeFile('./output/team.html', data, {}, (e) => {
+                                    e ? console.log(e) : console.log('Success!');
+                                });
+                            })
+                                
                         // console.log(initialAnswer);
                     } else if (generalAnswers.role === 'Engineer'){
                         inquirer
@@ -144,13 +154,7 @@ inquirer
                                 return console.log(teamMembers);
                             });
                     };
-                })    
-                .then(function(){
-                    const renderTeam = render(teamMembers);   
-                    fs.writeFile('./output/team.html', renderTeam, {}, (e) => {
-                        e ? console.log(e) : console.log('Success!');
-                    })
-                })
+                });    
         } else {
             return console.log('Ending process.');
         };

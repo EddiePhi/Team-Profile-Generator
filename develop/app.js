@@ -114,44 +114,48 @@ inquirer
                             .prompt(managerQuestion)
                             .then(function(managerAnswer){
                                 generalAnswers.officeNumber = managerAnswer.officeNumber;
-        
-                                teamMembers.push(generalAnswers);
-                                //console.log(generalAnswers)
+                                
+                                const managerObj = new Manager (generalAnswers.name, generalAnswers.id, generalAnswers.email, generalAnswers.officeNumber);
+                                teamMembers.push(managerObj);
                                 
                                 console.log('Manager added!');
                                 console.log(teamMembers)
-
-                                // PROBLEM AREA --------------------------------
-                                render(teamMembers);
-                                // ---------------------------------------------
                                   
-                            })
-                            .then(function(data){
-                                fs.writeFile('./output/team.html', data, {}, (e) => {
-                                    e ? console.log(e) : console.log('Success!');
+                                fs.writeFile('./output/team.html', render(teamMembers), {}, (e) => {
+                                    e ? console.log(e) : console.log('Render Success!');
                                 });
-                            })
-                                
-                        // console.log(initialAnswer);
+                            });
                     } else if (generalAnswers.role === 'Engineer'){
                         inquirer
                             .prompt(engineerQuestion)
                             .then(function(engineerAnswer){
                                 generalAnswers.github = engineerAnswer.github;
-                                console.log(engineerAnswer.github);
-                                teamMembers.push(generalAnswers);
+
+                                const engineerObj = new Engineer (generalAnswers.name, generalAnswers.id, generalAnswers.email, generalAnswers.github);
+                                teamMembers.push(engineerObj);
+                                
                                 console.log('Engineer added!');
-                                return console.log(teamMembers);
+                                console.log(teamMembers)
+                                  
+                                fs.writeFile('./output/team.html', render(teamMembers), {}, (e) => {
+                                    e ? console.log(e) : console.log('Render Success!');
+                                });
                             });
-                    } else if (generalAnswers.role === 'Engineer'){
+                    } else if (generalAnswers.role === 'Intern'){
                         inquirer
                             .prompt(internQuestion)
                             .then(function(internAnswer){
                                 generalAnswers.school = internAnswer.school;
-                                console.log(internAnswer.school);
-                                teamMembers.push(generalAnswers);
-                                console.log('Intern added!'); 
-                                return console.log(teamMembers);
+                                
+                                const internObj = new Intern (generalAnswers.name, generalAnswers.id, generalAnswers.email, generalAnswers.school);
+                                teamMembers.push(internObj);
+                                
+                                console.log('Intern added!');
+                                console.log(teamMembers)
+                                  
+                                fs.writeFile('./output/team.html', render(teamMembers), {}, (e) => {
+                                    e ? console.log(e) : console.log('Render Success!');
+                                });
                             });
                     };
                 });    

@@ -61,9 +61,11 @@ const generalQuestions = [
         message: 'Name: ',
     },
     {
-        type: 'input',
-        name: 'id',
-        message: 'ID: ',
+        type: 'list',
+        name: 'role',
+        message: 'Job Role: ',
+        choices: ['Manager', 'Engineer', 'Intern']
+
     },
     {
         type: 'input',
@@ -71,18 +73,18 @@ const generalQuestions = [
         message: 'Email Address',
     },
     {
-        type: 'list',
-        name: 'jobRole',
-        message: 'Job Role: ',
-        choices: ['Manager', 'Engineer', 'Intern']
-
+        type: 'input',
+        name: 'id',
+        message: 'ID: ',
     },
+    
+    
 ];
 
 const managerQuestion = [
     {
         type: 'input',
-        name: 'officeNum',
+        name: 'officeNumber',
         message: 'Office #: ',
     },
 ];
@@ -110,18 +112,18 @@ inquirer
             inquirer
                 .prompt(generalQuestions)
                 .then(function(generalAnswers){
-                    if (generalAnswers.jobRole === 'Manager'){
+                    if (generalAnswers.role === 'Manager'){
                         inquirer
                             .prompt(managerQuestion)
                             .then(function(managerAnswer){
-                                generalAnswers.officeNum = managerAnswer.officeNum;
-                                console.log(managerAnswer.officeNum);
+                                generalAnswers.officeNumber = managerAnswer.officeNumber;
+                                console.log(managerAnswer.officeNumber);
                                 teamMembers.push(generalAnswers);
                                 console.log('Manager added!');
                                 return console.log(teamMembers);
                             });
                         // console.log(initialAnswer);
-                    } else if (generalAnswers.jobRole === 'Engineer'){
+                    } else if (generalAnswers.role === 'Engineer'){
                         inquirer
                             .prompt(engineerQuestion)
                             .then(function(engineerAnswer){
@@ -131,7 +133,7 @@ inquirer
                                 console.log('Engineer added!');
                                 return console.log(teamMembers);
                             });
-                    } else if (generalAnswers.jobRole === 'Engineer'){
+                    } else if (generalAnswers.role === 'Engineer'){
                         inquirer
                             .prompt(internQuestion)
                             .then(function(internAnswer){

@@ -10,43 +10,21 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
 
-
-// Write code to use inquirer to gather information about the development team members,
-// and to create objects for each team member (using the correct classes as blueprints!)
-
-// After the user has input all employees desired, call the `render` function (required
-// above) and pass in an array containing all employee objects; the `render` function will
-// generate and return a block of HTML including templated divs for each employee!
-
-// After you have your html, you're now ready to create an HTML file using the HTML
-// returned from the `render` function. Now write it to a file named `team.html` in the
-// `output` folder. You can use the variable `outputPath` above target this location.
-// Hint: you may need to check if the `output` folder exists and create it if it
-// does not.
-
-// HINT: each employee type (manager, engineer, or intern) has slightly different
-// information; write your code to ask different questions via inquirer depending on
-// employee type.
-
-// HINT: make sure to build out your classes first! Remember that your Manager, Engineer,
-// and Intern classes should all extend from a class named Employee; see the directions
-// for further information. Be sure to test out each class and verify it generates an
-// object with the correct structure and methods. This structure will be crucial in order
-// for the provided `render` function to work! ```
-
-
+// Array to contain employee objects
 const teamMembers = [];
 
-const initialPrompt = [
+// Initial questions for initial prompt upon CLI application start
+const initialQuestion = [
     {
         type: 'list',
-        name: 'initialAdd',
+        name: 'add',
         message: 'Add new role?',
         choices: ['Yes', 'No'],
-    },
+    }
 ]
 
-const generalQuestions = [
+// Secondary question following initial questions if user selects "Yes"
+const generalQuestion = [
     {
         type: 'list',
         name: 'role',
@@ -55,7 +33,8 @@ const generalQuestions = [
     }
 ];
 
-const managerQuestion = [
+// Questions following secondary question if user selects "Manager"
+const managerQuestions = [
     {
         type: 'input',
         name: 'name',
@@ -78,7 +57,8 @@ const managerQuestion = [
     },
 ];
 
-const engineerQuestion = [
+// Questions following secondary question if user selects "Engineer"
+const engineerQuestions = [
     {
         type: 'input',
         name: 'name',
@@ -101,7 +81,8 @@ const engineerQuestion = [
     },
 ];
 
-const internQuestion = [
+// Questions following secondary question if user selects "Intern"
+const internQuestions = [
     {
         type: 'input',
         name: 'name',
@@ -124,23 +105,40 @@ const internQuestion = [
     },
 ];
 
+// Container function to initiate when CLI app is called.
 function init(){
 
+    // function to write rendered info for teamMembers array to outputPath location defined above.
     function write(){
         fs.writeFile(outputPath, render(teamMembers), {}, (e) => {
             e ? console.log(e) : console.log('Render Success!');
         });
     };
 
-    function askFirstQuestion(){
+    // function to prompt initial question
+    function askInitialQuestion(){
         inquirer
-            .prompt(generalQuestions)
+            .prompt(initialQuestion)
             .then((initialAnswer) => {
-                if(initialAnswer.role === 'Manager'){
+                if(initialAnswer.add === "Yes"){
+                    askGeneralQuestion();
+                } else {
+                    write();
+                    console.log('Process Ended.')
+                }
+            })
+    };
+
+    // function to prompt secondary question
+    function askGeneralQuestion(){
+        inquirer
+            .prompt(generalQuestion)
+            .then((generalAnswer) => {
+                if(generalAnswer.role === 'Manager'){
                     generateManager();
-                } else if (initialAnswer.role === 'Engineer'){
+                } else if (generalAnswer.role === 'Engineer'){
                     generateEngineer();
-                } else if (initialAnswer.role === 'Intern'){
+                } else if (generalAnswer.role === 'Intern'){
                     generateIntern();
                 } else {
                     write();
@@ -148,52 +146,57 @@ function init(){
             });
             };
 
+    // function to prompt manager questions and push object to teamMembers array
     function generateManager(){
         inquirer
-            .prompt(managerQuestion)
-            .then(function(managerAnswer){
+            .prompt(managerQuestions)
+            .then(function(managerAnswers){
                 
-                const managerObj = new Manager (managerAnswer.name, managerAnswer.id, managerAnswer.email, managerAnswer.officeNumber);
+                const managerObj = new Manager (managerAnswers.name, managerAnswers.id, managerAnswers.email, managerAnswers.officeNumber);
                 teamMembers.push(managerObj);
                 
                 console.log('Manager added!');
                 console.log(teamMembers)
-                askFirstQuestion(); 
+                askInitialQuestion(); 
             });
     };
 
+    // function to prompt engineer questions and push object to teamMembers array
     function generateEngineer(){
         inquirer
-            .prompt(engineerQuestion)
-            .then(function(engineerAnswer){
+            .prompt(engineerQuestions)
+            .then(function(engineerAnswers){
 
-                const engineerObj = new Engineer (engineerAnswer.name, engineerAnswer.id, engineerAnswer.email, engineerAnswer.github);
+                const engineerObj = new Engineer (engineerAnswers.name, engineerAnswers.id, engineerAnswers.email, engineerAnswers.github);
                 teamMembers.push(engineerObj);
                 
                 console.log('Engineer added!');
                 console.log(teamMembers)
-                askFirstQuestion(); 
+                askInitialQuestion(); 
             });
     };
 
+    // function to prompt intern questions and push object to teamMembers array
     function generateIntern(){
         inquirer
-            .prompt(internQuestion)
-            .then(function(internAnswer){
+            .prompt(internQuestions)
+            .then(function(internAnswers){
                 
-                const internObj = new Intern (internAnswer.name, internAnswer.id, internAnswer.email, internAnswer.school);
+                const internObj = new Intern (internAnswers.name, internAnswers.id, internAnswers.email, internAnswers.school);
                 teamMembers.push(internObj);
                 
                 console.log('Intern added!');
                 console.log(teamMembers)
-                askFirstQuestion(); 
+                askInitialQuestion(); 
             });
     };
 
-    askFirstQuestion();
+    // initiate initial question prompt
+    askInitialQuestion();
 
 };
 
+// initial container function
 init();
 
 

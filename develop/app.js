@@ -35,14 +35,6 @@ const render = require("./lib/htmlRenderer");
 // for the provided `render` function to work! ```
 
 
-// Activity from week 9 activity 28
-
-// const util = require('util');
-
-// const writeFileAsync = util.promisify(fs.writeFile);
-
-// const promptUser = () =>
-
 const teamMembers = [];
 
 const initialPrompt = [
@@ -56,15 +48,18 @@ const initialPrompt = [
 
 const generalQuestions = [
     {
-        type: 'input',
-        name: 'name',
-        message: 'Name: ',
-    },
-    {
         type: 'list',
         name: 'role',
         message: 'Job Role: ',
-        choices: ['Manager', 'Engineer', 'Intern']
+        choices: ['Manager','Engineer', 'Intern', 'None']
+    }
+];
+
+const managerQuestion = [
+    {
+        type: 'input',
+        name: 'name',
+        message: 'Name: ',
     },
     {
         type: 'input',
@@ -76,9 +71,6 @@ const generalQuestions = [
         name: 'id',
         message: 'ID: ',
     },
-];
-
-const managerQuestion = [
     {
         type: 'input',
         name: 'officeNumber',
@@ -89,6 +81,21 @@ const managerQuestion = [
 const engineerQuestion = [
     {
         type: 'input',
+        name: 'name',
+        message: 'Name: ',
+    },
+    {
+        type: 'input',
+        name: 'email',
+        message: 'Email Address: ',
+    },
+    {
+        type: 'input',
+        name: 'id',
+        message: 'ID: ',
+    },
+    {
+        type: 'input',
         name: 'github',
         message: 'GitHub Username: ',
     },
@@ -97,109 +104,97 @@ const engineerQuestion = [
 const internQuestion = [
     {
         type: 'input',
+        name: 'name',
+        message: 'Name: ',
+    },
+    {
+        type: 'input',
+        name: 'email',
+        message: 'Email Address: ',
+    },
+    {
+        type: 'input',
+        name: 'id',
+        message: 'ID: ',
+    },
+    {
+        type: 'input',
         name: 'school',
         message: 'School: ',
     },
 ];
 
-inquirer
-    .prompt(initialPrompt)
-    .then((initialAnswer) => {
-        if(initialAnswer.initialAdd === 'Yes'){
-            inquirer
-                .prompt(generalQuestions)
-                .then(function(generalAnswers){
-                    if (generalAnswers.role === 'Manager'){
-                        inquirer
-                            .prompt(managerQuestion)
-                            .then(function(managerAnswer){
-                                generalAnswers.officeNumber = managerAnswer.officeNumber;
-                                
-                                const managerObj = new Manager (generalAnswers.name, generalAnswers.id, generalAnswers.email, generalAnswers.officeNumber);
-                                teamMembers.push(managerObj);
-                                
-                                console.log('Manager added!');
-                                console.log(teamMembers)
-                                  
-                                fs.writeFile('./output/team.html', render(teamMembers), {}, (e) => {
-                                    e ? console.log(e) : console.log('Render Success!');
-                                });
-                            });
-                    } else if (generalAnswers.role === 'Engineer'){
-                        inquirer
-                            .prompt(engineerQuestion)
-                            .then(function(engineerAnswer){
-                                generalAnswers.github = engineerAnswer.github;
+function init(){
 
-                                const engineerObj = new Engineer (generalAnswers.name, generalAnswers.id, generalAnswers.email, generalAnswers.github);
-                                teamMembers.push(engineerObj);
-                                
-                                console.log('Engineer added!');
-                                console.log(teamMembers)
-                                  
-                                fs.writeFile('./output/team.html', render(teamMembers), {}, (e) => {
-                                    e ? console.log(e) : console.log('Render Success!');
-                                });
-                            });
-                    } else if (generalAnswers.role === 'Intern'){
-                        inquirer
-                            .prompt(internQuestion)
-                            .then(function(internAnswer){
-                                generalAnswers.school = internAnswer.school;
-                                
-                                const internObj = new Intern (generalAnswers.name, generalAnswers.id, generalAnswers.email, generalAnswers.school);
-                                teamMembers.push(internObj);
-                                
-                                console.log('Intern added!');
-                                console.log(teamMembers)
-                                  
-                                fs.writeFile('./output/team.html', render(teamMembers), {}, (e) => {
-                                    e ? console.log(e) : console.log('Render Success!');
-                                });
-                            });
-                    };
-                });    
-        } else {
-            return console.log('Ending process.');
-        };
-    });
+    function write(){
+        fs.writeFile(outputPath, render(teamMembers), {}, (e) => {
+            e ? console.log(e) : console.log('Render Success!');
+        });
+    };
 
+    function askFirstQuestion(){
+        inquirer
+            .prompt(generalQuestions)
+            .then((initialAnswer) => {
+                if(initialAnswer.role === 'Manager'){
+                    generateManager();
+                } else if (initialAnswer.role === 'Engineer'){
+                    generateEngineer();
+                } else if (initialAnswer.role === 'Intern'){
+                    generateIntern();
+                } else {
+                    write();
+                }
+            });
+            };
 
+    function generateManager(){
+        inquirer
+            .prompt(managerQuestion)
+            .then(function(managerAnswer){
+                
+                const managerObj = new Manager (managerAnswer.name, managerAnswer.id, managerAnswer.email, managerAnswer.officeNumber);
+                teamMembers.push(managerObj);
+                
+                console.log('Manager added!');
+                console.log(teamMembers)
+                askFirstQuestion(); 
+            });
+    };
 
+    function generateEngineer(){
+        inquirer
+            .prompt(engineerQuestion)
+            .then(function(engineerAnswer){
 
+                const engineerObj = new Engineer (engineerAnswer.name, engineerAnswer.id, engineerAnswer.email, engineerAnswer.github);
+                teamMembers.push(engineerObj);
+                
+                console.log('Engineer added!');
+                console.log(teamMembers)
+                askFirstQuestion(); 
+            });
+    };
 
+    function generateIntern(){
+        inquirer
+            .prompt(internQuestion)
+            .then(function(internAnswer){
+                
+                const internObj = new Intern (internAnswer.name, internAnswer.id, internAnswer.email, internAnswer.school);
+                teamMembers.push(internObj);
+                
+                console.log('Intern added!');
+                console.log(teamMembers)
+                askFirstQuestion(); 
+            });
+    };
 
-// -----------------------------------------
-// May not be needed
-// const generateHTML = (answers) =>
-// `<!DOCTYPE html>
-// <html lang="en">
-// <head>
-//   <meta charset="UTF-8">
-//   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-//   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-//   <title>Document</title>
-// </head>
-// <body>
-//   <div class="jumbotron jumbotron-fluid">
-//   <div class="container">
-//     <h1 class="display-4">${answers.name}</h1>
-//     <p class="lead">${answers.jobRole}.</p>
-//     <h3>Example heading <span class="badge badge-secondary">Contact Me</span></h3>
-//     <ul class="list-group">
-//       <li class="list-group-item">${answers.id}</li>
-//       <li class="list-group-item">${answers.email}</li>
-//     </ul>
-//   </div>
-// </div>
-// </body>
-// </html>`;
+    askFirstQuestion();
 
-// promptUser()
-//   .then((answers) => writeFileAsync('index.html', generateHTML(answers)))
-//   .then(() => console.log('Successfully wrote to index.html'))
-//   .catch((err) => console.error(err));
-// -----------------------------------------
+};
+
+init();
 
 
 

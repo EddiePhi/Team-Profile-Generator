@@ -11,7 +11,7 @@ Screenshot:
 ![Team Profile Generator](./develop/assets/team-profile-generator.png)
 
 Video Demo:
-
+https://drive.google.com/file/d/19JsEohHYmh7n6AqmI5kAAUh-7oU4d96L/view 
 
 
 Technologies: HTML5, CSS3, Bootstrap, JavaScript, Node.js, NPM (Jest, Inquirer)
